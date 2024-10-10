@@ -23,7 +23,7 @@ const App = () => {
   useEffect(() => {
     const fetchAllFlights = async () => {
       setLoading(true)
-      const query = new Parse.Query("Flights");
+      const query = new Parse.Query("Flight");
       const results = await query.find();
       const fetchedFlights = results.map(item => item.attributes); // Extract attributes
       setFlights(fetchedFlights); // Update state with fetched flights

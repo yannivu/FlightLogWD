@@ -23,7 +23,7 @@ const AddFlight = ({ addFlight }) => {
     event.preventDefault();
 
     // Create a new Parse Object for the Flights class
-    const Flight = Parse.Object.extend('Flights');
+    const Flight = Parse.Object.extend('Flight');
     const newFlight = new Flight();
 
     // Set flight details to the Parse object
