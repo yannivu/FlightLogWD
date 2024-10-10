@@ -1,30 +1,83 @@
-import logo from './logo.svg';
-import './App.css';
-import * as ENV from './environments.js';
+import React, { useState, useEffect } from 'react';
+import { Container, Box, CssBaseline, Snackbar, Alert, CircularProgress } from '@mui/material';
+import Header from './components/Header';
+import AddFlight from './components/AddFlight';
+import FlightList from './components/FlightList';
+import SearchBar from './components/SearchBar';
+import * as ENV from './environment.js'
 import Parse from 'parse';
 
-Parse.initialize(ENV.APPLICATION_ID, ENV.JAVASCRIPT_KEY);
-Parse.serverURL(ENV.SERVER_URL);
+const appId = ENV.REACT_APP_PARSE_APP_ID;
+const jsKey = ENV.REACT_APP_PARSE_JAVASCRIPT_KEY;
+const serverUrl = ENV.REACT_APP_PARSE_HOST_URL;
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+Parse.initialize(appId, jsKey);
+Parse.serverURL = serverUrl;
+
+const App = () => {
+  const [flights, setFlights] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAllFlights = async () => {
+      setLoading(true)
+      const query = new Parse.Query("Flights");
+      const results = await query.find();
+      const fetchedFlights = results.map(item => item.attributes); // Extract attributes
+      setFlights(fetchedFlights); // Update state with fetched flights
+      setLoading(false);
+    };
+  
+    fetchAllFlights();
+  }, []); 
+
+  const addFlight = (newFlight) => {
+    setFlights((prevFlights) => [...prevFlights, newFlight]);
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') return;
+    setOpenSnackbar(false);
+  };
+
+
+  const filteredFlights = flights.filter((flight) =>
+    flight.passengerName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-}
+
+  return (
+    <>
+      <CssBaseline />
+      <Header title="Flight App" />
+      <Container maxWidth="md">
+        <Box my={4}>
+          <SearchBar setSearchQuery={setSearchQuery} />
+          <AddFlight addFlight={addFlight} />
+          {loading ? (
+            <Box display="flex" justifyContent="center" my={4}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <FlightList flights={filteredFlights} />
+          )}
+        </Box>
+      </Container>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          Flight added successfully!
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
+
 
 export default App;
