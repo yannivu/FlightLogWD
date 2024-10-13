@@ -20,18 +20,30 @@ const App = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchAllFlights = async () => {
-      setLoading(true)
-      const query = new Parse.Query("Flight");
-      const results = await query.find();
-      const fetchedFlights = results.map(item => item.attributes); // Extract attributes
-      setFlights(fetchedFlights); // Update state with fetched flights
-      setLoading(false);
-    };
-  
-    fetchAllFlights();
-  }, []); 
+useEffect(() => {
+  const fetchAllFlights = async () => {
+    setLoading(true);
+    const query = new Parse.Query("Flight");
+    query.include("airline"); // Include airline object in the query
+    const results = await query.find();
+
+    const fetchedFlights = results.map(item => {
+      const flightData = {
+        passengerName: item.get("passengerName"),
+        departureAirportCode: item.get("departureAirportCode"),
+        arrivalAirportCode: item.get("arrivalAirportCode"),
+        flightNumber: item.get("flightNumber"),
+        airline: item.get("airline").get("name") // Relational query to get airline name from the airline class
+      };
+      return flightData;
+    });
+
+    setFlights(fetchedFlights); // Update state w ith fetched flights
+    setLoading(false);
+  };
+
+  fetchAllFlights();
+}, []);
 
   const addFlight = (newFlight) => {
     setFlights((prevFlights) => [...prevFlights, newFlight]);
