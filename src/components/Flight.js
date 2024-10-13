@@ -4,7 +4,7 @@ import { ListItem, ListItemText, Divider } from '@mui/material';
 const Flight = ({ flight }) => {
   const secondaryText = (
     <>
-      <strong>Airline:</strong> {flight.airlineName} <br />
+      <strong>Airline:</strong> {flight.airline} <br />
       <strong>Route:</strong> {flight.departureAirportCode.toUpperCase()} &rarr; {flight.arrivalAirportCode.toUpperCase()}
     </>
   );
