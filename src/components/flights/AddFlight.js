@@ -14,6 +14,7 @@ import {
 import { fetchAllAirlines } from '../../services/airlineService';
 
 const AddFlight = ({ addFlight }) => {
+  // State variables for form fields
   const [passengerName, setPassengerName] = useState('');
   const [departureAirportCode, setDepartureAirportCode] = useState('');
   const [arrivalAirportCode, setArrivalAirportCode] = useState('');
@@ -23,6 +24,7 @@ const AddFlight = ({ addFlight }) => {
   const [loadingAirlines, setLoadingAirlines] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch airlines data when component mounts
   useEffect(() => {
     const loadAirlines = async () => {
       try {
@@ -39,6 +41,7 @@ const AddFlight = ({ addFlight }) => {
     loadAirlines();
   }, []);
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
   
@@ -59,16 +62,18 @@ const AddFlight = ({ addFlight }) => {
     addFlight(newFlight);
   };  
 
+  // Show loading message while fetching airlines
   if (loadingAirlines) {
     return <Box>Loading airlines...</Box>;
   }
 
+  // Show error message if there's an error
   if (error) {
     return <Box color="error.main">{error}</Box>;
   }
 
   return (
-<Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
+    <Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
       <Typography variant="h6" gutterBottom>
         Add Flight
       </Typography>
