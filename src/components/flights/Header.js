@@ -1,17 +1,29 @@
-import React, { useEffect } from 'react';
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import React from 'react';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Header = ({ title }) => {
-  useEffect(() => {
-    document.title = title;
-  }, [title]);
-
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component="div">
+        {/* App Title */}
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           {title}
         </Typography>
+
+        {/* Navigation Buttons */}
+        <Box>
+          <Button color="inherit" component={RouterLink} to="/">
+            Home
+          </Button>
+          <Button color="inherit" component={RouterLink} to="/flights">
+            My Flights
+          </Button>
+          <Button color="inherit" component={RouterLink} to="/about">
+            About
+          </Button>
+          {/* Add more buttons as needed */}
+        </Box>
       </Toolbar>
     </AppBar>
   );

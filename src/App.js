@@ -1,17 +1,17 @@
 import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Container, CssBaseline } from '@mui/material';
 import Header from './components/flights/Header';
-import FlightPage from './pages/FlightPage';
-
+import AppRoutes from './components/AppRoutes';
 const App = () => {
   return (
-    <>
+    <Router>
       <CssBaseline />
       <Header title="Flight App" />
       <Container maxWidth="md">
-        <FlightPage />
+        <AppRoutes /> {/* Render the routes */}
       </Container>
-    </>
+    </Router>
   );
 };
 
