@@ -19,9 +19,6 @@ const Header = ({ title }) => {
           <Button color="inherit" component={RouterLink} to="/flights">
             My Flights
           </Button>
-          <Button color="inherit" component={RouterLink} to="/about">
-            About
-          </Button>
           {/* Add more buttons as needed */}
         </Box>
       </Toolbar>
