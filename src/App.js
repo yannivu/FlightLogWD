@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Container, CssBaseline } from '@mui/material';
 import Header from './components/flights/Header';
 import AppRoutes from './components/AppRoutes';
+
 const App = () => {
   return (
     <Router>
