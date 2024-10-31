@@ -20,3 +20,13 @@ export const createUser = (newUser) => {
       alert(`Error: ${error.message}`);
     });
 };
+
+export const loginUser = (credentials) => {
+    return Parse.User.logIn(credentials.email, credentials.password)
+        .then((user) => {
+        return user;
+        })
+        .catch((error) => {
+        alert(`Error: ${error.message}`);
+        });
+};
