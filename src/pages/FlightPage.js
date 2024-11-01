@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, CircularProgress, Snackbar, Alert } from '@mui/material';
 import SearchBar from '../components/flights/SearchBar';
 import AddFlight from '../components/flights/AddFlight';
 import FlightList from '../components/flights/FlightList';
 import { addNewFlight, fetchAllFlights } from '../services/flightService';
+import { AuthContext } from '../contexts/AuthContext';
 
 const FlightPage = () => {
+  const { user, loading: authLoading } = useContext(AuthContext);
   const [flights, setFlights] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Fetch flights on component mount
+  // Fetch all flights on component mount (optional)
   useEffect(() => {
     const loadFlights = async () => {
       setLoading(true);
@@ -20,8 +24,11 @@ const FlightPage = () => {
         const fetchedFlights = await fetchAllFlights();
         setFlights(fetchedFlights);
         setSnackbarMessage('Flights loaded successfully.');
+        setSnackbarSeverity('success');
       } catch (error) {
+        setError('Failed to load flights.');
         setSnackbarMessage('Failed to load flights.');
+        setSnackbarSeverity('error');
       } finally {
         setLoading(false);
       }
@@ -32,18 +39,31 @@ const FlightPage = () => {
 
   // Handler to add a new flight
   const handleAddFlight = async (newFlight) => {
+    if (!user) {
+      setSnackbarMessage('You must be logged in to add a flight.');
+      setSnackbarSeverity('warning');
+      setOpenSnackbar(true);
+      return;
+    }
+
+    setLoading(true);
     try {
-      const savedFlight = await addNewFlight(newFlight);
+      const savedFlight = await addNewFlight(newFlight, user);
       setFlights((prevFlights) => [...prevFlights, savedFlight]);
+      setSnackbarMessage('Flight added successfully.');
+      setSnackbarSeverity('success');
       setOpenSnackbar(true);
     } catch (error) {
       setSnackbarMessage('Failed to add flight.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Handler to close the snackbar
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') return;
+  const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
 
@@ -52,18 +72,20 @@ const FlightPage = () => {
     flight.passengerName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (authLoading || loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <>
       <Box my={4}>
         <SearchBar setSearchQuery={setSearchQuery} />
         <AddFlight addFlight={handleAddFlight} />
-        {loading ? (
-          <Box display="flex" justifyContent="center" my={4}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <FlightList flights={filteredFlights} />
-        )}
+        <FlightList flights={filteredFlights} />
       </Box>
       <Snackbar
         open={openSnackbar}
@@ -71,13 +93,12 @@ const FlightPage = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
     </>
   );
 };
-
 
 export default FlightPage;

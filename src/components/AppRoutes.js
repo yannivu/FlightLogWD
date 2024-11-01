@@ -1,18 +1,59 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoutes';
+import PublicRoute from './PublicRoutes';
+import AuthModule from '../pages/AuthPage';
+import AuthRegister from './auth/AuthRegister';
+import AuthLogin from './auth/AuthLogin';
 import FlightPage from '../pages/FlightPage';
 import UserFlights from '../pages/UserFlights';
 
 const AppRoutes = () => {
   return (
     <Routes>
-  
-      {/* Flights Route */}
-      <Route path="/*" element={<FlightPage />} />
+      {/* Public routes - accessible only when logged out */}
+      <Route
+        path="/auth"
+        element={
+          <PublicRoute>
+            <AuthModule />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <AuthRegister />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <AuthLogin />
+          </PublicRoute>
+        }
+      />
 
-      {/* My Flights Route */}
-      <Route path="/flights" element={<UserFlights />} />
-
+      {/* Protected routes - accessible only when logged in */}
+      <Route
+        path="/flights"
+        element={
+          <ProtectedRoute>
+            <FlightPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-flights"
+        element={
+          <ProtectedRoute>
+            <UserFlights />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };

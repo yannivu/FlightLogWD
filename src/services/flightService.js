@@ -26,11 +26,12 @@ export const fetchAllFlights = async () => {
 };
 
 /**
- * Add a new flight to Parse server.
+ * Add a new flight to Parse server and associate it with the current user.
  * @param {Object} flightData - Data of the flight to add.
+ * @param {Object} currentUser - The current Parse User object.
  * @returns {Promise<Object>} The added flight data.
  */
-export const addNewFlight = async (flightData) => {
+export const addNewFlight = async (flightData, currentUser) => {
   try {
     const Flight = Parse.Object.extend("Flight");
     const flight = new Flight();
@@ -46,6 +47,9 @@ export const addNewFlight = async (flightData) => {
     airline.id = flightData.airlineId;
     flight.set("airline", airline);
 
+    // Associate the flight with the current user
+    flight.set("user", currentUser);
+
     const savedFlight = await flight.save();
     
     return {
@@ -54,10 +58,38 @@ export const addNewFlight = async (flightData) => {
       departureAirportCode: savedFlight.get("departureAirportCode"),
       arrivalAirportCode: savedFlight.get("arrivalAirportCode"),
       flightNumber: savedFlight.get("flightNumber"),
-      airline: savedFlight.get("airline").get("name")
+      airline: savedFlight.get("airline").get("name"),
+      user: savedFlight.get("user"), // User who added the flight
     };
   } catch (error) {
     console.error("Error adding flight:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch flights associated with the current user from Parse server.
+ * @param {Object} currentUser - The current Parse User object.
+ * @returns {Promise<Array>} List of fetched flights.
+ */
+export const fetchUserFlights = async (currentUser) => {
+  try {
+    const query = new Parse.Query("Flight");
+    query.equalTo("user", currentUser); // Filter by current user
+    query.include("airline");
+    const results = await query.find();
+
+    // Map Parse objects to plain JavaScript objects
+    return results.map(item => ({
+      id: item.id,
+      passengerName: item.get("passengerName"),
+      departureAirportCode: item.get("departureAirportCode"),
+      arrivalAirportCode: item.get("arrivalAirportCode"),
+      flightNumber: item.get("flightNumber"),
+      airline: item.get("airline").get("name"),
+    }));
+  } catch (error) {
+    console.error("Error fetching user flights:", error);
     throw error;
   }
 };
