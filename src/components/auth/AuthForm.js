@@ -1,65 +1,61 @@
-import React from "react";
+import React from 'react';
+import { TextField, Button, Container, Box } from '@mui/material';
 
-const AuthForm = ({ user, onChange, onSubmit }) => {
+const AuthForm = ({ user, onChange, onSubmit, isLogin }) => {
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>First Name</label>
-          <br />
-          <input
-            type="text"
-            value={user.firstName}
-            onChange={onChange}
-            name="firstName"
-            placeholder="first name"
-            required
-          />
-        </div>
-        <div>
-          <label>Last Name</label>
-          <br />
-          <input
-            type="text"
-            value={user.lastName}
-            onChange={onChange}
-            name="lastName"
-            placeholder="last name"
-            required
-          />
-        </div>{" "}
-        <div>
-          <label>Email</label>
-          <br />
-          <input
+    <Container maxWidth="sm">
+      <Box mt={10}>
+        <form onSubmit={onSubmit}>
+          {!isLogin && (
+            <>
+              <TextField
+                fullWidth
+                label="First Name"
+                name="firstName"
+                value={user.firstName}
+                onChange={onChange}
+                margin="normal"
+                required
+              />
+              <TextField
+                fullWidth
+                label="Last Name"
+                name="lastName"
+                value={user.lastName}
+                onChange={onChange}
+                margin="normal"
+                required
+              />
+            </>
+          )}
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
             type="email"
             value={user.email}
             onChange={onChange}
-            name="email"
-            placeholder="email"
+            margin="normal"
             required
           />
-        </div>{" "}
-        <div>
-          <label>Password</label>
-          <br />
-          <input
+          <TextField
+            fullWidth
+            label="Password"
+            name="password"
             type="password"
             value={user.password}
             onChange={onChange}
-            name="password"
-            placeholder="password"
-            min="0"
+            margin="normal"
             required
           />
-        </div>
-        <div>
-          <button type="submit" onSubmit={onSubmit}>
-            Submit
-          </button>
-        </div>
-      </form>
-    </div>
+          <Box mt={2}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Submit
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Container>
   );
 };
 

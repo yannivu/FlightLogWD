@@ -1,43 +1,64 @@
-import React, { useEffect, useState } from "react";
-import { createUser } from "./AuthService";
-import AuthForm from "./AuthForm";
+import React, { useEffect, useState, useContext } from 'react';
+import { createUser } from '../../services/AuthService';
+import AuthForm from './AuthForm';
+import { AuthContext } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Snackbar, Alert } from '@mui/material';
 
 const AuthRegister = () => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [newUser, setNewUser] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  });
+  const [add, setAdd] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
   });
 
-  // flag is the state to watch for add/remove updates
-  const [add, setAdd] = useState(false);
-
   useEffect(() => {
-    if (newUser && add) {
-      createUser(newUser).then((userCreated) => {
+    const registerUser = async () => {
+      if (add) {
+        const userCreated = await createUser(newUser);
         if (userCreated) {
-          alert(
-            `${userCreated.get("firstName")}, you successfully registered!`
-          );
+          login(userCreated);
+          setSnackbar({
+            open: true,
+            message: `${userCreated.get('firstName')}, you successfully registered!`,
+            severity: 'success',
+          });
+          navigate('/flights');
+        } else {
+          setSnackbar({
+            open: true,
+            message: 'Registration failed. Please try again.',
+            severity: 'error',
+          });
         }
         setAdd(false);
-      });
-    }
-  }, [newUser, add]);
+      }
+    };
+
+    registerUser();
+  }, [add, newUser, login, navigate]);
 
   const onChangeHandler = (e) => {
-    e.preventDefault();
-    console.log(e.target);
-    const { name, value: newValue } = e.target;
-    console.log(newValue);
-    setNewUser({ ...newUser, [name]: newValue });
+    const { name, value } = e.target;
+    setNewUser({ ...newUser, [name]: value });
   };
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    console.log("submitted: ", e.target);
     setAdd(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -46,7 +67,18 @@ const AuthRegister = () => {
         user={newUser}
         onChange={onChangeHandler}
         onSubmit={onSubmitHandler}
+        isLogin={false}
       />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -13,14 +13,12 @@ const Flight = ({ flight }) => {
 
   return (
     <>
-      {/* ListItem to display passenger name and flight details */}
       <ListItem alignItems="flex-start">
         <ListItemText
           primary={flight.passengerName}
           secondary={secondaryText}
         />
       </ListItem>
-      {/* Divider to separate list items */}
       <Divider component="li" />
     </>
   );

@@ -1,38 +1,42 @@
-import React from "react";
+import React from 'react';
+import { TextField, Button, Container, Box, Typography } from '@mui/material';
 
-const LoginForm = ({ credentials, onChange, onSubmit }) => {
+const LoginForm = ({ credentials, onChange, onSubmit, isLogin }) => {
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>Email</label>
-          <br />
-          <input
+    <Container maxWidth="sm">
+      <Box mt={10}>
+        <Typography variant="h5" gutterBottom>
+          {isLogin ? 'Login' : 'Register'}
+        </Typography>
+        <form onSubmit={onSubmit}>
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
             type="email"
             value={credentials.email}
             onChange={onChange}
-            name="email"
-            placeholder="email"
+            margin="normal"
             required
           />
-        </div>
-        <div>
-          <label>Password</label>
-          <br />
-          <input
+          <TextField
+            fullWidth
+            label="Password"
+            name="password"
             type="password"
             value={credentials.password}
             onChange={onChange}
-            name="password"
-            placeholder="password"
+            margin="normal"
             required
           />
-        </div>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
+          <Box mt={2}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Submit
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Container>
   );
 };
 

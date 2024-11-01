@@ -8,7 +8,7 @@ const App = () => {
   return (
     <Router>
       <CssBaseline />
-      <Header title="Flight App" />
+      <Header title="Flight Tracker" />
       <Container maxWidth="md">
         <AppRoutes /> {/* Render the routes */}
       </Container>
