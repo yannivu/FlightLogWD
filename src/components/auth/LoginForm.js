@@ -9,6 +9,7 @@ const LoginForm = ({ credentials, onChange, onSubmit, isLogin }) => {
           {isLogin ? 'Login' : 'Register'}
         </Typography>
         <form onSubmit={onSubmit}>
+          {/* Email field */}
           <TextField
             fullWidth
             label="Email"
@@ -19,6 +20,7 @@ const LoginForm = ({ credentials, onChange, onSubmit, isLogin }) => {
             margin="normal"
             required
           />
+          {/* Password field */}
           <TextField
             fullWidth
             label="Password"

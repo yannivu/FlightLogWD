@@ -1,11 +1,13 @@
 import React from 'react';
 import { TextField, Button, Container, Box } from '@mui/material';
 
+// AuthForm component definition
 const AuthForm = ({ user, onChange, onSubmit, isLogin }) => {
   return (
     <Container maxWidth="sm">
       <Box mt={10}>
         <form onSubmit={onSubmit}>
+          {/* Render first name and last name fields only if it's not a login form */}
           {!isLogin && (
             <>
               <TextField
@@ -28,6 +30,7 @@ const AuthForm = ({ user, onChange, onSubmit, isLogin }) => {
               />
             </>
           )}
+          {/* Email field */}
           <TextField
             fullWidth
             label="Email"
@@ -38,6 +41,7 @@ const AuthForm = ({ user, onChange, onSubmit, isLogin }) => {
             margin="normal"
             required
           />
+          {/* Password field */}
           <TextField
             fullWidth
             label="Password"
@@ -48,6 +52,7 @@ const AuthForm = ({ user, onChange, onSubmit, isLogin }) => {
             margin="normal"
             required
           />
+          {/* Submit button */}
           <Box mt={2}>
             <Button type="submit" variant="contained" color="primary" fullWidth>
               Submit

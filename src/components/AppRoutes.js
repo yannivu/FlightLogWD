@@ -36,6 +36,14 @@ const AppRoutes = () => {
           </PublicRoute>
         }
       />
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <AuthModule />
+          </PublicRoute>
+        }
+      />
 
       {/* Protected routes - accessible only when logged in */}
       <Route
