@@ -68,7 +68,7 @@ export const addNewFlight = async (flightData, currentUser) => {
       flightNumber: savedFlight.get("flightNumber"),
       departureDate: savedFlight.get("departureDate"),
       arrivalDate: savedFlight.get("arrivalDate"),
-      airline: savedFlight.get("airline").get("name"),
+      airline: flightData.airlineName, // Airline name
       user: savedFlight.get("user"), // User who added the flight
     };
   } catch (error) {

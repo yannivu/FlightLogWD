@@ -20,7 +20,7 @@ const FlightList = ({ flights }) => {
         <List>
           {/* Mapping through flights array and rendering Flight component for each flight */}
           {flights.map((flight) => (
-            <Flight key={flight.flightNumber} flight={flight} />
+            <Flight key={flight.id} flight={flight} />
           ))}
         </List>
       )}
