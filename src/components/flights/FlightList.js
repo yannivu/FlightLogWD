@@ -9,7 +9,7 @@ const FlightList = ({ flights }) => {
     <Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
       {/* Typography component for the title */}
       <Typography variant="h6" gutterBottom>
-        Flight List
+        Saved Flights
       </Typography>
       {/* Conditional rendering based on the length of flights array */}
       {flights.length === 0 ? (

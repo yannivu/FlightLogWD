@@ -17,6 +17,8 @@ export const fetchAllFlights = async () => {
       departureAirportCode: item.get("departureAirportCode"),
       arrivalAirportCode: item.get("arrivalAirportCode"),
       flightNumber: item.get("flightNumber"),
+      departureDate: item.get("departureDate"),
+      arrivalDate: item.get("arrivalDate"),
       airline: item.get("airline").get("name")
     }));
   } catch (error) {
@@ -36,10 +38,16 @@ export const addNewFlight = async (flightData, currentUser) => {
     const Flight = Parse.Object.extend("Flight");
     const flight = new Flight();
 
+    // Convert string datetime to Parse.Date objects
+    const departureDate = new Date(flightData.departureDate);
+    const arrivalDate = new Date(flightData.arrivalDate);
+
     flight.set("passengerName", flightData.passengerName);
     flight.set("departureAirportCode", flightData.departureAirportCode);
     flight.set("arrivalAirportCode", flightData.arrivalAirportCode);
     flight.set("flightNumber", flightData.flightNumber);
+    flight.set("departureDate", departureDate);
+    flight.set("arrivalDate", arrivalDate);
 
     // Set the 'airline' pointer
     const Airline = Parse.Object.extend("Airline");
@@ -58,6 +66,8 @@ export const addNewFlight = async (flightData, currentUser) => {
       departureAirportCode: savedFlight.get("departureAirportCode"),
       arrivalAirportCode: savedFlight.get("arrivalAirportCode"),
       flightNumber: savedFlight.get("flightNumber"),
+      departureDate: savedFlight.get("departureDate"),
+      arrivalDate: savedFlight.get("arrivalDate"),
       airline: savedFlight.get("airline").get("name"),
       user: savedFlight.get("user"), // User who added the flight
     };
@@ -86,6 +96,8 @@ export const fetchUserFlights = async (currentUser) => {
       departureAirportCode: item.get("departureAirportCode"),
       arrivalAirportCode: item.get("arrivalAirportCode"),
       flightNumber: item.get("flightNumber"),
+      departureDate: item.get("departureDate"),
+      arrivalDate: item.get("arrivalDate"),
       airline: item.get("airline").get("name"),
     }));
   } catch (error) {

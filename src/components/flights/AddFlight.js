@@ -18,8 +18,10 @@ const AddFlight = ({ addFlight }) => {
   const [passengerName, setPassengerName] = useState('');
   const [departureAirportCode, setDepartureAirportCode] = useState('');
   const [arrivalAirportCode, setArrivalAirportCode] = useState('');
-  const [flightNumber, setFlightNumber] = useState();
+  const [flightNumber, setFlightNumber] = useState('');
   const [airlineId, setAirlineId] = useState('');
+  const [departureDate, setDepartureDate] = useState('');
+  const [arrivalDate, setArrivalDate] = useState('');
   const [airlines, setAirlines] = useState([]);
   const [loadingAirlines, setLoadingAirlines] = useState(true);
   const [error, setError] = useState(null);
@@ -45,9 +47,16 @@ const AddFlight = ({ addFlight }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
   
-    // Basic validation
-    if (!passengerName || !departureAirportCode || !arrivalAirportCode || !flightNumber || !airlineId) {
+    // Enhanced validation
+    if (!passengerName || !departureAirportCode || !arrivalAirportCode || 
+        !flightNumber || !airlineId || !departureDate || !arrivalDate) {
       setError("All fields are required.");
+      return;
+    }
+
+    
+    if (arrivalDate <= departureDate) {
+      setError("Arrival time must be after departure time.");
       return;
     }
   
@@ -55,8 +64,10 @@ const AddFlight = ({ addFlight }) => {
       passengerName,
       departureAirportCode,
       arrivalAirportCode,
-      flightNumber: Number(flightNumber), 
-      airlineId
+      flightNumber: Number(flightNumber),
+      airlineId,
+      departureDate,
+      arrivalDate
     };
   
     addFlight(newFlight);
@@ -149,6 +160,38 @@ const AddFlight = ({ addFlight }) => {
               margin="normal"
               inputProps={{ maxLength: 3 }}
               helperText="e.g., LAX"
+            />
+          </Grid>
+
+          {/* Departure Date and Time */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Departure Date and Time"
+              type="datetime-local"
+              value={departureDate}
+              onChange={(e) => setDepartureDate(e.target.value)}
+              required
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+
+          {/* Arrival Date and Time */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Arrival Date and Time"
+              type="datetime-local"
+              value={arrivalDate}
+              onChange={(e) => setArrivalDate(e.target.value)}
+              required
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
 
