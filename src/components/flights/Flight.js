@@ -7,7 +7,10 @@ const Flight = ({ flight }) => {
   const secondaryText = (
     <>
       <strong>Airline:</strong> {flight.airline} <br />
-      <strong>Route:</strong> {flight.departureAirportCode.toUpperCase()} &rarr; {flight.arrivalAirportCode.toUpperCase()}
+      <strong>Route:</strong> {flight.departureAirportCode.toUpperCase()} &rarr; {flight.arrivalAirportCode.toUpperCase()}<br />
+      <strong>Departure:</strong> {new Date(flight.departureDate).toLocaleString([], { hour: '2-digit', minute: '2-digit', year: 'numeric', month: 'numeric', day: 'numeric' })}<br />
+      <strong>Arrival:</strong> {new Date(flight.arrivalDate).toLocaleString([], { hour: '2-digit', minute: '2-digit', year: 'numeric', month: 'numeric', day: 'numeric' })}<br />
+      <strong>Flight Number:</strong> {flight.flightNumber}
     </>
   );
 
