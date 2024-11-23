@@ -13,6 +13,8 @@ import {
   InputLabel,
   TextField,
   Divider,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import Flight from '../components/flights/Flight';
 import { fetchUserFlights } from '../services/flightService';
@@ -39,7 +41,8 @@ const UserFlights = () => {
   const [arrivalAirports, setArrivalAirports] = useState([]);
   const [selectedArrivalAirport, setSelectedArrivalAirport] = useState('');
   const [selectedDepartureDate, setSelectedDepartureDate] = useState('');
-  const [selectedArrivalDate, setSelectedArrivalDate] = useState(''); 
+  const [selectedArrivalDate, setSelectedArrivalDate] = useState('');
+  const [showPastFlights, setShowPastFlights] = useState(false); // New state for showing past flights
 
   useEffect(() => {
     const loadUserFlights = async () => {
@@ -147,8 +150,17 @@ const UserFlights = () => {
     applyFilters(sortOption, selectedPassenger, selectedAirline, selectedDepartureAirport, selectedArrivalAirport, selectedDepartureDate, date);
   };
 
+  const handleShowPastFlightsChange = (event) => {
+    setShowPastFlights(event.target.checked);
+    applyFilters(sortOption, selectedPassenger, selectedAirline, selectedDepartureAirport, selectedArrivalAirport, selectedDepartureDate, selectedArrivalDate);
+  };
+
+
   const applyFilters = (sortOption, passenger, airline, depAirport, arrAirport, depDate, arrDate) => {
     let result = sortFlights(flights, sortOption);
+    if (!showPastFlights) {
+      result = result.filter((flight) => new Date(flight.departureDate) >= new Date());
+    }
     if (passenger) {
       result = result.filter((flight) => flight.passengerName === passenger);
     }
@@ -217,6 +229,12 @@ const UserFlights = () => {
           <Typography variant="h6" gutterBottom>
             Filter By
           </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+            <FormControlLabel
+              control={<Checkbox checked={showPastFlights} onChange={handleShowPastFlightsChange} />}
+              label="Upcoming Flights Only"
+            />
+          </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             <FormControl sx={{ minWidth: 200 }}>
               <InputLabel id="passenger-label">Passenger</InputLabel>
