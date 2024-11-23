@@ -9,8 +9,6 @@ import {
 } from '@mui/material';
 import algoliasearch from 'algoliasearch/lite';
 
-const INDEX = 'Airline';
-
 const searchClient = algoliasearch(
   'U9F4V3JVO0',
   'd06eb0d72bb6d1d1cbf13f96992324da'
@@ -19,7 +17,15 @@ const searchClient = algoliasearch(
 const fetchAirlines = async (query) => {
   if (!query) return [];
   const { results } = await searchClient.search([
-    { indexName: INDEX, query, params: { hitsPerPage: 5 } },
+    { indexName: 'Airline', query, params: { hitsPerPage: 5 } },
+  ]);
+  return results[0]?.hits || [];
+};
+
+const fetchAirports = async (query) => {
+  if (!query) return [];
+  const { results } = await searchClient.search([
+    { indexName: 'Airport', query, params: { hitsPerPage: 5 } },
   ]);
   return results[0]?.hits || [];
 };
@@ -35,25 +41,60 @@ const AddFlight = ({ addFlight }) => {
   const [arrivalDate, setArrivalDate] = useState('');
   const [error, setError] = useState(null);
   const [airlineOptions, setAirlineOptions] = useState([]);
+  const [departureAirportOptions, setDepartureAirportOptions] = useState([]);
+  const [arrivalAirportOptions, setArrivalAirportOptions] = useState([]);
 
-  const handleAirlineSearch = async (event) => {
-    const query = event.target.value;
-    setAirlineName(query);
-    if (query.length > 0) {
-      const airlines = await fetchAirlines(query);
+  const handleAirlineSearch = async (event, value) => {
+    setAirlineName(value);
+    if (value.length > 0) {
+      const airlines = await fetchAirlines(value);
       setAirlineOptions(airlines);
     } else {
       setAirlineOptions([]);
     }
   };
 
+  const handleDepartureSearch = async (event, value) => {
+    if (value.length > 0) {
+      const airports = await fetchAirports(value);
+      setDepartureAirportOptions(airports);
+    } else {
+      setDepartureAirportOptions([]);
+    }
+  };
+  
+  const handleArrivalSearch = async (event, value) => {
+    if (value.length > 0) {
+      const airports = await fetchAirports(value);
+      setArrivalAirportOptions(airports);
+    } else {
+      setArrivalAirportOptions([]);
+    }
+  };
+
   const handleSuggestionClick = (event, value) => {
     if (value) {
       setAirlineName(value.name);
-      setAirlineId(value.objectId);
+      setAirlineId(value.objectID);
     } else {
       setAirlineName('');
       setAirlineId('');
+    }
+  };
+
+  const handleDepartureClick = (event, value) => {
+    if (value) {
+      setDepartureAirportCode(value.IATA);
+    } else {
+      setDepartureAirportCode('');
+    }
+  };
+
+  const handleArrivalClick = (event, value) => {
+    if (value) {
+      setArrivalAirportCode(value.IATA);
+    } else {
+      setArrivalAirportCode('');
     }
   };
 
@@ -124,7 +165,7 @@ const AddFlight = ({ addFlight }) => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={2.4}>
             <TextField
               label="Flight Number"
               value={flightNumber}
@@ -137,30 +178,63 @@ const AddFlight = ({ addFlight }) => {
             />
           </Grid>
 
-          {/* Other Fields */}
-          <Grid item xs={12} sm={3}>
-            <TextField
-              label="Departure Airport"
-              value={departureAirportCode}
-              onChange={(e) => setDepartureAirportCode(e.target.value.toUpperCase())}
-              required
-              fullWidth
-              margin="normal"
-              inputProps={{ maxLength: 3 }}
-              helperText="e.g., JFK"
+          {/* Departure Airport */}
+          <Grid item xs={12} sm={4.8}>
+            <Autocomplete
+              freeSolo
+              disableClearable
+              options={departureAirportOptions}
+              getOptionLabel={(option) =>
+                option.Name && option.IATA ? `${option.Name} (${option.IATA})` : ''
+              }
+              filterOptions={(options, { inputValue }) =>
+                options.filter(
+                  (option) =>
+                    option.Name ||
+                    option.IATA
+                )
+              }
+              onInputChange={handleDepartureSearch}
+              onChange={handleDepartureClick}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Departure Airport"
+                  margin="normal"
+                  required
+                  fullWidth
+                />
+              )}
             />
           </Grid>
 
-          <Grid item xs={12} sm={3}>
-            <TextField
-              label="Arrival Airport"
-              value={arrivalAirportCode}
-              onChange={(e) => setArrivalAirportCode(e.target.value.toUpperCase())}
-              required
-              fullWidth
-              margin="normal"
-              inputProps={{ maxLength: 3 }}
-              helperText="e.g., LAX"
+          {/* Arrival Airport */}
+          <Grid item xs={12} sm={4.8}>
+            <Autocomplete
+              freeSolo
+              disableClearable
+              options={arrivalAirportOptions}
+              getOptionLabel={(option) =>
+                option.Name && option.IATA ? `${option.Name} (${option.IATA})` : ''
+              }
+              filterOptions={(options, { inputValue }) =>
+                options.filter(
+                  (option) =>
+                    option.Name ||
+                    option.IATA
+                )
+              }
+              onInputChange={handleArrivalSearch}
+              onChange={handleArrivalClick}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Arrival Airport"
+                  margin="normal"
+                  required
+                  fullWidth
+                />
+              )}
             />
           </Grid>
 
