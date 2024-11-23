@@ -14,7 +14,6 @@ const FlightPage = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   // Fetch all flights on component mount (optional)
   useEffect(() => {
@@ -26,7 +25,6 @@ const FlightPage = () => {
         setSnackbarMessage('Flights loaded successfully.');
         setSnackbarSeverity('success');
       } catch (error) {
-        setError('Failed to load flights.');
         setSnackbarMessage('Failed to load flights.');
         setSnackbarSeverity('error');
       } finally {
