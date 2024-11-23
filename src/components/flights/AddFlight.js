@@ -75,7 +75,7 @@ const AddFlight = ({ addFlight }) => {
   const handleSuggestionClick = (event, value) => {
     if (value) {
       setAirlineName(value.name);
-      setAirlineId(value.objectID);
+      setAirlineId(value.objectId);
     } else {
       setAirlineName('');
       setAirlineId('');
