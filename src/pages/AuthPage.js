@@ -11,6 +11,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import HeroImage from '../assets/static/images/jorgen-hendriksen-UfVy7UjQ_rA-unsplash.jpg'
 
 const AuthModule = () => {
   const theme = useTheme();
@@ -113,7 +114,7 @@ const AuthModule = () => {
         <Grid item xs={12} md={6}>
           <Box
             component="img"
-            src="static/images/landing-page.jpg"
+            src={HeroImage}
             alt="Flight Illustration"
             sx={{
               width: '100%',

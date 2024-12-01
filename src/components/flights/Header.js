@@ -24,6 +24,7 @@ import {
   FlightTakeoff as FlightTakeoffIcon,
   Logout as LogoutIcon,
   AccountCircle as AccountCircleIcon,
+  Map as MapIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -64,6 +65,11 @@ const Header = ({ title = 'Flights App' }) => {
       path: '/my-flights',
       icon: <FlightTakeoffIcon />,
     },
+    {
+      title: 'Map',
+      path: '/map',
+      icon: <MapIcon />,
+    }
   ];
 
   const drawerContent = (

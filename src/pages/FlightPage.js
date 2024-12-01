@@ -5,6 +5,7 @@ import AddFlight from '../components/flights/AddFlight';
 import FlightList from '../components/flights/FlightList';
 import { addNewFlight, fetchAllFlights } from '../services/flightService';
 import { AuthContext } from '../contexts/AuthContext';
+import { Container } from '@mui/material';
 
 const FlightPage = () => {
   const { user, loading: authLoading } = useContext(AuthContext);
@@ -80,21 +81,23 @@ const FlightPage = () => {
 
   return (
     <>
-      <Box my={4}>
-        <SearchBar setSearchQuery={setSearchQuery} />
-        <AddFlight addFlight={handleAddFlight} />
-        <FlightList flights={filteredFlights} />
-      </Box>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+    <Container>
+        <Box my={4}>
+          <SearchBar setSearchQuery={setSearchQuery} />
+          <AddFlight addFlight={handleAddFlight} />
+          <FlightList flights={filteredFlights} />
+        </Box>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+    </Container>
     </>
   );
 };

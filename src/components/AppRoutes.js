@@ -7,6 +7,8 @@ import AuthRegister from './auth/AuthRegister';
 import AuthLogin from './auth/AuthLogin';
 import FlightPage from '../pages/FlightPage';
 import UserFlights from '../pages/UserFlights';
+import MapPage2D from '../pages/2DMapPage';
+import Profile from '../pages/Profile';
 
 const AppRoutes = () => {
   return (
@@ -59,6 +61,22 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <UserFlights />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/map"
+        element={
+          <ProtectedRoute>
+            <MapPage2D />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />
