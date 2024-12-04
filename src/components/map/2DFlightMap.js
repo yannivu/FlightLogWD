@@ -223,38 +223,6 @@ const FlightMap2D = () => {
         elevation={3}
         sx={{ width: '300px', overflowY: 'auto', p: 2 }}
       >
-        {/* Active Flights Section */}
-        <List component="nav" aria-labelledby="active-flights-section">
-          <ListItemButton onClick={handleActiveClick}>
-            <ListItemText primary={`Active Flights (${activeFlights.length})`} />
-            {activeOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          <Collapse in={activeOpen} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              {activeFlights.map((flight, index) => (
-                <React.Fragment key={`active-${flight.flight.iata}-${flight.id || index}`}>
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={() => handleFlightClick(flight)}>
-                      <ListItemText
-                        primary={`${flight.airline.name} ${flight.flight.iata}`}
-                        secondary={`${flight.departure.iata} → ${flight.arrival.iata}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                  {index < activeFlights.length - 1 && <Divider />}
-                </React.Fragment>
-              ))}
-              {activeFlights.length === 0 && (
-                <ListItem>
-                  <ListItemText primary="No Active Flights" />
-                </ListItem>
-              )}
-            </List>
-          </Collapse>
-        </List>
-
-        <Divider sx={{ my: 2 }} />
-
         {/* Upcoming Flights Section */}
         <List component="nav" aria-labelledby="upcoming-flights-section">
           <ListItemButton onClick={handleUpcomingClick}>
@@ -279,6 +247,38 @@ const FlightMap2D = () => {
               {upcomingFlights.length === 0 && (
                 <ListItem>
                   <ListItemText primary="No Upcoming Flights" />
+                </ListItem>
+              )}
+            </List>
+          </Collapse>
+        </List>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Active Flights Section */}
+        <List component="nav" aria-labelledby="active-flights-section">
+          <ListItemButton onClick={handleActiveClick}>
+            <ListItemText primary={`Live Flights (${activeFlights.length})`} />
+            {activeOpen ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={activeOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {activeFlights.map((flight, index) => (
+                <React.Fragment key={`active-${flight.flight.iata}-${flight.id || index}`}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleFlightClick(flight)}>
+                      <ListItemText
+                        primary={`${flight.airline.name} ${flight.flight.iata}`}
+                        secondary={`${flight.departure.iata} → ${flight.arrival.iata}`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                  {index < activeFlights.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
+              {activeFlights.length === 0 && (
+                <ListItem>
+                  <ListItemText primary="No Active Flights" />
                 </ListItem>
               )}
             </List>
