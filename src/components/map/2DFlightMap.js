@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -22,12 +22,14 @@ import flightIcon from '../../assets/static/images/airplane.png';
 import data from '../../assets/static/data/active.json';
 import { fetchAirportLongLatByCode } from '../../services/AirlineService';
 import { fetchAllFlights } from '../../services/flightService';
+import * as turf from '@turf/turf';
 
 const FlightMap2D = () => {
   // Combined state for active and upcoming flights
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [flightPaths, setFlightPaths] = useState([]);
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -67,8 +69,8 @@ const FlightMap2D = () => {
             );
             return {
               ...flight,
-              departure,
-              arrival,
+              departure: departure, // Assume { latitude, longitude, iata, airport }
+              arrival: arrival, // Assume { latitude, longitude, iata, airport }
               type: 'upcoming',
             };
           })
@@ -84,8 +86,8 @@ const FlightMap2D = () => {
               name: flight.airline,
             },
           },
-          departure: flight.departure,
-          arrival: flight.arrival,
+          departure: flight.departure, // { latitude, longitude, iata, airport }
+          arrival: flight.arrival, // { latitude, longitude, iata, airport }
           arrivalAirport: flight.arrivalAirportCode,
           departureAirport: flight.departureAirportCode,
           live: {
@@ -123,16 +125,52 @@ const FlightMap2D = () => {
     fetchFlights();
   }, []);
 
-  const customIcon = new Icon({
+  const activeFlightIcon = new Icon({
     iconUrl: flightIcon,
     iconSize: [32, 32],
   });
+
+  const upcomingFlightIcon = new Icon({
+    iconUrl: flightIcon,
+    iconSize: [32, 32],
+    className: 'upcoming-flight-icon', // Ensure this class is styled in CSS
+  });
+
+  // Helper function to generate arc coordinates
+  const generateArcCoordinates = (from, to, numPoints = 50) => {
+    const fromPoint = turf.point([from[1], from[0]]);
+    const toPoint = turf.point([to[1], to[0]]);
+    const line = turf.greatCircle(fromPoint, toPoint, { npoints: numPoints });
+    return line.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+  };
 
   const handleFlightClick = (flight) => {
     setSelectedFlight(flight);
     if (mapRef.current) {
       const position = [flight.live.latitude, flight.live.longitude];
       mapRef.current.flyTo(position, 8);
+    }
+
+    if (flight.type === 'upcoming') {
+      const from = [
+        flight.departure[0].latitude,
+        flight.departure[0].longitude,
+      ];
+      const to = [
+        flight.arrival[0].latitude,
+        flight.arrival[0].longitude,
+      ];
+      const arc = generateArcCoordinates(from, to);
+      setFlightPaths(prevPaths => {
+        const exists = prevPaths.find(path => path.id === flight.id);
+        if (exists) {
+          // Remove the path
+          return prevPaths.filter(path => path.id !== flight.id);
+        } else {
+          // Add the new path
+          return [...prevPaths, { id: flight.id, coordinates: arc }];
+        }
+      });
     }
   };
 
@@ -199,13 +237,28 @@ const FlightMap2D = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+          
+          {/* Render Flight Paths */}
+          {flightPaths.map(path => (
+            <Polyline
+              key={`path-${path.id}`}
+              positions={path.coordinates}
+              color="blue" // Choose a color that distinguishes flight paths
+              weight={2}
+              dashArray="5,10" // Optional: Make the line dashed
+            />
+          ))}
+
+          {/* Existing Markers */}
           {flights.map((flight, index) => {
-            const position =[flight.live.latitude, flight.live.longitude];
+            const position = [flight.live.latitude, flight.live.longitude];
+            const isUpcoming = flight.type === 'upcoming';
+            const icon = isUpcoming ? upcomingFlightIcon : activeFlightIcon;
             return (
               <Marker
                 key={`${flight.type}-${flight.flight.iata}-${flight.id || index}`}
                 position={position}
-                icon={customIcon}
+                icon={icon}
               >
                 <Popup>
                   <Card sx={{ minWidth: 275, maxWidth: 400 }}>
@@ -310,10 +363,12 @@ const FlightMap2D = () => {
               </Marker>
             );
           })}
+
+          {/* Selected Flight Popup */}
           {selectedFlight && (
             <Marker
               position={[selectedFlight.live.latitude, selectedFlight.live.longitude]}
-              icon={customIcon}
+              icon={selectedFlight.type === 'upcoming' ? upcomingFlightIcon : activeFlightIcon}
             >
               <Popup autoOpen>
                 <Card sx={{ minWidth: 275, maxWidth: 400 }}>
