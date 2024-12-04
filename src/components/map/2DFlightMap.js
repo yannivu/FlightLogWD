@@ -16,9 +16,18 @@ import {
   Chip,
   Grid,
   Divider,
+  Collapse, // Import Collapse
 } from '@mui/material';
-import { Flight, Speed, Height, DirectionsRun } from '@mui/icons-material';
-import flightIcon from '../../assets/static/images/airplane.png';
+import { 
+  Flight, 
+  Speed, 
+  Height, 
+  DirectionsRun,
+  ExpandLess, // Import ExpandLess icon
+  ExpandMore, // Import ExpandMore icon
+} from '@mui/icons-material';
+import UpcomingFlightIcon from '../../assets/static/images/airplane.png';
+import LiveFlightIcon from '../../assets/static/images/airplane-green.png';
 import data from '../../assets/static/data/active.json';
 import { fetchAirportLongLatByCode } from '../../services/AirlineService';
 import { fetchAllFlights } from '../../services/flightService';
@@ -31,6 +40,18 @@ const FlightMap2D = () => {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [flightPaths, setFlightPaths] = useState([]);
   const mapRef = useRef(null);
+
+  // State for collapsible sections
+  const [activeOpen, setActiveOpen] = useState(true);
+  const [upcomingOpen, setUpcomingOpen] = useState(true);
+
+  const handleActiveClick = () => {
+    setActiveOpen(!activeOpen);
+  };
+
+  const handleUpcomingClick = () => {
+    setUpcomingOpen(!upcomingOpen);
+  };
 
   useEffect(() => {
     const fetchFlights = async () => {
@@ -91,7 +112,7 @@ const FlightMap2D = () => {
           arrivalAirport: flight.arrivalAirportCode,
           departureAirport: flight.departureAirportCode,
           live: {
-            latitude: flight.departure[0].latitude, // Assuming initial position is departure
+            latitude: flight.departure[0].latitude, // Corrected to use object properties directly
             longitude: flight.departure[0].longitude,
             speed_horizontal: 0, // No speed info for upcoming flights
             altitude: 0, // No altitude info for upcoming flights
@@ -126,14 +147,13 @@ const FlightMap2D = () => {
   }, []);
 
   const activeFlightIcon = new Icon({
-    iconUrl: flightIcon,
+    iconUrl: LiveFlightIcon,
     iconSize: [32, 32],
   });
 
   const upcomingFlightIcon = new Icon({
-    iconUrl: flightIcon,
+    iconUrl: UpcomingFlightIcon,
     iconSize: [32, 32],
-    className: 'upcoming-flight-icon', // Ensure this class is styled in CSS
   });
 
   // Helper function to generate arc coordinates
@@ -193,37 +213,76 @@ const FlightMap2D = () => {
     );
   }
 
+  // Separate flights by type
+  const activeFlights = flights.filter(flight => flight.type === 'active');
+  const upcomingFlights = flights.filter(flight => flight.type === 'upcoming');
+
   return (
     <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
       <Paper
         elevation={3}
         sx={{ width: '300px', overflowY: 'auto', p: 2 }}
       >
-        <Typography variant="h6" gutterBottom>
-          {`Flights (${flights.length})`}
-        </Typography>
-        <List>
-          {flights.map((flight, index) => (
-            <React.Fragment key={`${flight.type}-${flight.flight.iata}-${flight.id || index}`}>
-              <ListItem disablePadding>
-                <ListItemButton onClick={() => handleFlightClick(flight)}>
-                  <ListItemText
-                    primary={
-                      flight.type === 'active'
-                        ? `${flight.airline.name} ${flight.flight.iata}`
-                        : `${flight.flight.airline.name} - Flight ${flight.flight.iata}`
-                      }
-                    secondary={
-                      flight.type === 'active'
-                        ? `${flight.departure.iata} → ${flight.arrival.iata}`
-                        : `${flight.departureAirport} → ${flight.arrivalAirport}`
-                    }
-                  />
-                </ListItemButton>
-              </ListItem>
-              {index < flights.length - 1 && <Divider />}
-            </React.Fragment>
-          ))}
+        {/* Active Flights Section */}
+        <List component="nav" aria-labelledby="active-flights-section">
+          <ListItemButton onClick={handleActiveClick}>
+            <ListItemText primary={`Active Flights (${activeFlights.length})`} />
+            {activeOpen ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={activeOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {activeFlights.map((flight, index) => (
+                <React.Fragment key={`active-${flight.flight.iata}-${flight.id || index}`}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleFlightClick(flight)}>
+                      <ListItemText
+                        primary={`${flight.airline.name} ${flight.flight.iata}`}
+                        secondary={`${flight.departure.iata} → ${flight.arrival.iata}`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                  {index < activeFlights.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
+              {activeFlights.length === 0 && (
+                <ListItem>
+                  <ListItemText primary="No Active Flights" />
+                </ListItem>
+              )}
+            </List>
+          </Collapse>
+        </List>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Upcoming Flights Section */}
+        <List component="nav" aria-labelledby="upcoming-flights-section">
+          <ListItemButton onClick={handleUpcomingClick}>
+            <ListItemText primary={`Upcoming Flights (${upcomingFlights.length})`} />
+            {upcomingOpen ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={upcomingOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {upcomingFlights.map((flight, index) => (
+                <React.Fragment key={`upcoming-${flight.flight.iata}-${flight.id || index}`}>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleFlightClick(flight)}>
+                      <ListItemText
+                        primary={`${flight.flight.airline.name} - Flight ${flight.flight.iata}`}
+                        secondary={`${flight.departureAirport} → ${flight.arrivalAirport}`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                  {index < upcomingFlights.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
+              {upcomingFlights.length === 0 && (
+                <ListItem>
+                  <ListItemText primary="No Upcoming Flights" />
+                </ListItem>
+              )}
+            </List>
+          </Collapse>
         </List>
       </Paper>
       <Box sx={{ flexGrow: 1 }}>
