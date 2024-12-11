@@ -9,7 +9,7 @@ const App = () => {
     <Router>
       <CssBaseline />
       <Header title="Flight Tracker" />
-        <AppRoutes /> {/* Render the routes */}
+        <AppRoutes /> {/* Render the routes! */}
     </Router>
   );
 };
